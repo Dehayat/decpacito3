@@ -9,7 +9,7 @@ movecount = 0
 function love.load()
 	math.randomseed(os.time())
 	love.graphics.setNewFont(18)
-	_moves[movecount] = Move("hit",40,0,0,0)
+	_moves[movecount] = Move("hit",40,0,0,0,25)
 	movecount = movecount+1
 	pok1 = Pokemon("Batman",30,56,35,72,10)
 	pok1:addmove(0)
