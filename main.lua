@@ -1,6 +1,7 @@
 Object = require "classic"
 require('objects/pokemon')
 require('objects/moves')
+require('objects/modifiers')
 require('objects/battle')
 
 _moves = {}
@@ -9,16 +10,24 @@ movecount = 0
 function love.load()
 	math.randomseed(os.time())
 	love.graphics.setNewFont(18)
-	_moves[movecount] = Move("hit",40,0,0,0,0)
+	--Move(name,power,nature,par1,par2,par3,pp,priority)
+	_moves[movecount] = Move("hit",40,0,0,0,0,25,0)
 	movecount = movecount+1
-	pok1 = Pokemon("Batman",30,56,35,72,10)
-	pok1:addmove(0)
+	_moves[movecount] = Move("hits",12,1,2,5,0,20,0)
+	movecount = movecount+1
+	_moves[movecount] = Move("don't hit",40,2,0,0,0,10,2)
+	movecount = movecount+1
+	_moves[movecount] = Move("fasten",0,3,0,1,"speed",20,0)
+	movecount = movecount+1
+	--Pokemon(name,hp,atk,def,speed,level)
+	pok1 = Pokemon("Batman",30,56,35,70,7)
+	pok1:addmove(_moves[0])
+	pok1:addmove(_moves[1])
+	pok1:addmove(_moves[3])
 	pok2 = Pokemon("Buttman",20,56,35,72,4)
-	pok2:addmove(0)
-	--added new move
-	_moves[movecount] = Move("don't hit",40,2,0,0,2)
-	movecount = movecount+1
-	pok2:addmove(1)
+	pok2:addmove(_moves[0])
+	pok2:addmove(_moves[2])
+	--Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)
 end
 
@@ -32,7 +41,5 @@ function love.draw()
 end
 
 function love.keyreleased(key)
-	if(battle.state==0 and key=="1")then
-		battle.key = 1
-	end
+	battle.key=key
 end
