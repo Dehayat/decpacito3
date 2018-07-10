@@ -10,10 +10,14 @@ function Pokemon:new(name,hp,atk,def,speed,level)
 	self.level = level
 	self.moves = 0
 	self.moveset = {}
+	self.movepp = {}
+	self.movemaxpp = {}
 end
 
 function Pokemon:addmove(p)
 	self.moveset[self.moves] = p
+	self.movepp[self.moves]=p.pp
+	self.movemaxpp[self.moves]=p.pp
 	self.moves = self.moves+1
 end
 

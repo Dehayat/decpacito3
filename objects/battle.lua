@@ -10,20 +10,33 @@ function Battle:new(pok1,pok2)
 end
 
 function Battle:update(dt)
-	if(self.key) then
-		self.move1 = self.key-1
+	if(self.key and self.state==0) then
+	print(self.key)
+		if(self.pok1.movepp[self.key-1]>0)then
+			self.move1 = self.key-1
+			self.pok1.movepp[self.key-1]=self.pok1.movepp[self.key-1]-1
+			self.key = nil
+			if(self.move1) then --TODO check if can move
+				self.move2 = self:choose(self.pok2.moves)
+				self.state = 1
+				self:calc()
+			end
+		else
+		print("sorry")
+		self.state=3
 		self.key = nil
-		if(self.move1) then --TODO check if can move
-			self.move2 = self:choose(self.pok2.moves)
-			self.state = 1
-			self:calc()
 		end
+	elseif(self.key and self.state==3) then
+	self.state=0
+	self.key=nil
 	end
 end
 
 function Battle:attack(p1,p2,m)
 	if(_moves[m].nature==0) then
 		self:type0(p1,p2,m)
+	elseif(_moves[m].nature==1) then
+		self:type1(p1,p2,m)
 	end
 end
 
@@ -33,7 +46,7 @@ function Battle:modify(p1)
 		modifier = modifier*2
 	end
 	modifier = modifier*(math.random(217,255)/255)
-	print(modifier)
+
 	return modifier
 end
 
@@ -42,7 +55,18 @@ function Battle:type0(p1,p2,m)
 	base = math.floor(base*self:modify(p1))
 	dealt = math.min(base,p2.curhp)
 	p2.curhp = p2.curhp - dealt
-	print(p2.curhp)
+
+end
+
+function Battle:type1(p1,p2,m)
+	t=math.random(_moves[m].min,_moves[m].max)
+	for i=1,t do
+		base = math.floor((2*p1.level/5+2)*_moves[m].power*(p1.atk/p2.def)/50+2)
+		base = math.floor(base*self:modify(p1))
+		dealt = math.min(base,p2.curhp)
+		p2.curhp = p2.curhp - dealt
+
+	end
 end
 
 function Battle:calc()
@@ -125,9 +149,13 @@ function Battle:drawend()
 	love.graphics.print(self.loser .. " is a me mario",50,love.graphics.getHeight()-150+25);
 end
 
+function Battle:drawpp()
+	love.graphics.print("pp is no more",50,love.graphics.getHeight()-150+25);
+end
+
 function Battle:drawwait()
 	for i,v in pairs(self.pok1.moveset) do
-		love.graphics.print((i+1) .. "-" .. _moves[v].name,50,love.graphics.getHeight()-150+i*25);
+		love.graphics.print((i+1) .. "-" .. self.pok1.moveset[i].name .."  ".. self.pok1.movepp[i].."/" ..self.pok1.movemaxpp[i]   ,50,love.graphics.getHeight()-150+i*25);
 	end
 end
 
@@ -137,7 +165,9 @@ function Battle:draw()
 		self:drawwait()
 	elseif(self.state==1) then
 		self:drawcalc()
-	else
+	elseif(self.state==2)then
 		self:drawend()
+	else
+		self:drawpp()
 	end
 end

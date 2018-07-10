@@ -11,10 +11,13 @@ function love.load()
 	love.graphics.setNewFont(18)
 	_moves[movecount] = Move("hit",40,0,0,0,25)
 	movecount = movecount+1
-	pok1 = Pokemon("Batman",30,56,35,72,10)
-	pok1:addmove(0)
+	_moves[movecount] = Move("hits",12,1,2,5,20)
+	movecount = movecount+1
+	pok1 = Pokemon("Batman",30,56,35,72,5)
+	pok1:addmove(_moves[0])
+	pok1:addmove(_moves[1])
 	pok2 = Pokemon("Buttman",20,56,35,72,4)
-	pok2:addmove(0)
+	pok2:addmove(_moves[0])
 	battle = Battle(pok1,pok2)
 end
 
@@ -28,7 +31,7 @@ function love.draw()
 end
 
 function love.keyreleased(key)
-	if(battle.state==0 and key=="1")then
-		battle.key = 1
-	end
+	battle.key=key
+
+
 end
