@@ -7,6 +7,8 @@ function Battle:new(pok1,pok2)
 	self.loser = nil
 	self.move1 = nil
 	self.move2 = nil
+	self.mods1 = modifiers()
+	self.mods2 = modifiers()
 end
 
 function Battle:update(dt)
@@ -31,26 +33,20 @@ function Battle:update(dt)
 end
 
 function Battle:attack(p1,p2,m)
-	--added check protected
-	if(p2.protected and (m.nature==0 or m.nature==1) )then
-		--added reset protected
-		p2.protected = false
-		if(p1.lastmove==m.name)then
-			p1.moverepeat = p1.moverepeat+1
-		else
-			p1.moverepeat = 1
-		end
-		p1.lastmove = m.name
-		return
-	end
-	if(m.nature==0) then
+	if(m.nature==0 and not p2.protected) then
 		self:type0(p1,p2,m)
 	--added protect nature move
-	elseif(m.nature==1) then
+	elseif(m.nature==1 and not p2.protected) then
 		self:type1(p1,p2,m)
 	elseif(m.nature==2) then
-		print(p1.repeated)
 		self:type2(p1,m)
+	elseif(m.nature==3) then
+		if(m.par1==1 and not p2.protected) then
+			self:type3(self.mods2,m)
+		end
+		if(m.par1==0) then
+			self:type3(self.mods1,m)
+		end
 	end
 	--added reset protected
 	p2.protected = false
@@ -80,7 +76,7 @@ function Battle:type0(p1,p2,m)
 end
 
 function Battle:type1(p1,p2,m)
-	t=math.floor(math.random(m.min,m.max))
+	t=math.floor(math.random(m.par1,m.par2))
 	for i=1,t do
 		base = math.floor((2*p1.level/5+2)*m.power*(p1.atk/p2.def)/50+2)
 		base = math.floor(base*self:modify(p1))
@@ -97,15 +93,22 @@ function Battle:type2(p1,m)
 		rate = math.max(1/8,(1/(2 ^ p1.moverepeat)))
 		chance = chance*rate
 	end
-	print(chance)
 	if(math.random(0,255)<=chance) then
 		p1.protected = true
 	end
 end
+--added type3 attack
+function Battle:type3(mods,m)
+	mods[m.par3] = math.max(-6,math.min(6,mods[m.par3]+m.par2))
+end
+
+function Battle:getstat(statname,stat,mod)
+	return math.floor(stat*modifiers_multiplier[mod]/100)
+end
 
 function Battle:calc()
 	--added check priority
-	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and pok1.speed>=pok2.speed))then
+	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and self:getstat("speed",pok1.speed,self.mods1.speed)>=self:getstat("speed",pok2.speed,self.mods2.speed)))then
 		self:attack(self.pok1,self.pok2,self.move1)
 		if(not pok2:isdead())then
 			self:attack(self.pok2,self.pok1,self.move2)
