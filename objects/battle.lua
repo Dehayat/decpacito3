@@ -108,21 +108,21 @@ end
 
 function Battle:calc()
 	--added check priority
-	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and self:getstat("speed",pok1.speed,self.mods1.speed)>=self:getstat("speed",pok2.speed,self.mods2.speed)))then
+	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and self:getstat("speed",self.pok1.speed,self.mods1.speed)>=self:getstat("speed",self.pok2.speed,self.mods2.speed)))then
 		self:attack(self.pok1,self.pok2,self.move1)
-		if(not pok2:isdead())then
+		if(not self.pok2:isdead())then
 			self:attack(self.pok2,self.pok1,self.move2)
-			if(not pok1:isdead()) then
+			if(not self.pok1:isdead()) then
 				self.state = 0
 				return
 			else
 				self.state = 2
-				self.loser = pok1.name
+				self.loser = self.pok1.name
 				return
 			end
 		else
 			self.state = 2
-			self.loser = pok2.name
+			self.loser = self.pok2.name
 			return
 		end
 	else
@@ -134,12 +134,12 @@ function Battle:calc()
 				return
 			else
 				self.state = 2
-				self.loser= pok2.name
+				self.loser= self.pok2.name
 				return
 			end
 		else
 			self.state = 2
-			self.loser = pok1.name
+			self.loser = self.pok1.name
 			return
 		end
 	end
