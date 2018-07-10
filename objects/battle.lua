@@ -13,6 +13,12 @@ end
 
 function Battle:update(dt)
 	if(self.key and self.state==0) then
+		--if key is invalid do nothing
+		self.key = tonumber(self.key)
+		if(not self.key or self.key<1 or self.key>self.pok1.moves)then
+			key = nil
+			return
+		end
 		if(self.pok1.movepp[self.key-1]>0)then
 			self.move1 = pok1.moveset[self.key-1]
 			self.pok1.movepp[self.key-1]=self.pok1.movepp[self.key-1]-1
@@ -27,25 +33,30 @@ function Battle:update(dt)
 			self.key = nil
 		end
 	elseif(self.key and self.state==3) then
-	self.state=0
-	self.key=nil
+		self.state=0
+		self.key=nil
 	end
 end
 
-function Battle:attack(p1,p2,m)
+--added from
+--[[
+	1: from pok1
+	2: from pok1
+]]
+function Battle:attack(p1,p2,m,from)
 	if(m.nature==0 and not p2.protected) then
-		self:type0(p1,p2,m)
+		self:type0(p1,p2,m,from)
 	--added protect nature move
 	elseif(m.nature==1 and not p2.protected) then
-		self:type1(p1,p2,m)
+		self:type1(p1,p2,m,from)
 	elseif(m.nature==2) then
-		self:type2(p1,m)
+		self:type2(p1,m,from)
 	elseif(m.nature==3) then
 		if(m.par1==1 and not p2.protected) then
-			self:type3(self.mods2,m)
+			self:type3(self.mods2,m,from)
 		end
 		if(m.par1==0) then
-			self:type3(self.mods1,m)
+			self:type3(self.mods1,m,from)
 		end
 	end
 	--added reset protected
@@ -68,18 +79,27 @@ function Battle:modify(p1)
 	return modifier
 end
 
-function Battle:type0(p1,p2,m)
-	base = math.floor((2*p1.level/5+2)*m.power*(p1.atk/p2.def)/50+2)
+--added get dmg for type0 and type1 depends on special or not
+function Battle:getdmg(p1,p2,m,from)
+	if(m.special==0) then
+		base = math.floor((2*p1.level/5+2)*m.power*(self:getstat("atk",from)/self:getstat("def",from))/50+2)
+	else
+		base = math.floor((2*p1.level/5+2)*m.power*(self:getstat("spatk",from)/self:getstat("spdef",from))/50+2)
+	end
 	base = math.floor(base*self:modify(p1))
+	return base
+end
+
+function Battle:type0(p1,p2,m,from)
+	base = self:getdmg(p1,p2,m,from)
 	dealt = math.min(base,p2.curhp)
 	p2.curhp = p2.curhp - dealt
 end
 
-function Battle:type1(p1,p2,m)
+function Battle:type1(p1,p2,m,from)
 	t=math.floor(math.random(m.par1,m.par2))
 	for i=1,t do
-		base = math.floor((2*p1.level/5+2)*m.power*(p1.atk/p2.def)/50+2)
-		base = math.floor(base*self:modify(p1))
+		base = self:getdmg(p1,p2,m,from)
 		dealt = math.min(base,p2.curhp)
 		p2.curhp = p2.curhp - dealt
 
@@ -102,16 +122,25 @@ function Battle:type3(mods,m)
 	mods[m.par3] = math.max(-6,math.min(6,mods[m.par3]+m.par2))
 end
 
-function Battle:getstat(statname,stat,mod)
-	return math.floor(stat*modifiers_multiplier[mod]/100)
+--getstat now take statname and from
+--[[
+	1: from pok1
+	2: from pok1
+]]
+function Battle:getstat(statname,from)
+	pok = self["pok"..from]
+	mod = self["mods"..from]
+	stat = pok[statname]
+	statmod = mod[statname]
+	return math.floor(stat*modifiers_multiplier[statmod]/100)
 end
 
 function Battle:calc()
 	--added check priority
-	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and self:getstat("speed",self.pok1.speed,self.mods1.speed)>=self:getstat("speed",self.pok2.speed,self.mods2.speed)))then
-		self:attack(self.pok1,self.pok2,self.move1)
+	if(self.move1.priority>self.move2.priority or (self.move1.priority==self.move2.priority and self:getstat("speed",1)>=self:getstat("speed",2)))then
+		self:attack(self.pok1,self.pok2,self.move1,1)
 		if(not self.pok2:isdead())then
-			self:attack(self.pok2,self.pok1,self.move2)
+			self:attack(self.pok2,self.pok1,self.move2,2)
 			if(not self.pok1:isdead()) then
 				self.state = 0
 				return
@@ -126,9 +155,9 @@ function Battle:calc()
 			return
 		end
 	else
-		self:attack(self.pok2,self.pok1,self.move2)
+		self:attack(self.pok2,self.pok1,self.move2,2)
 		if(not pok1:isdead())then
-			self:attack(self.pok1,self.pok2,self.move1)
+			self:attack(self.pok1,self.pok2,self.move1,1)
 			if(not pok2:isdead()) then
 				self.state = 0
 				return

@@ -1,11 +1,14 @@
 Pokemon = Object:extend()
 
-function Pokemon:new(name,hp,atk,def,speed,level)
+function Pokemon:new(name,hp,atk,def,spatk,spdef,speed,level)
 	self.name = name
 	self.curhp = hp
 	self.maxhp = hp
 	self.atk = atk
 	self.def = def
+	--added spatk and spdef
+	self.spatk = spatk
+	self.spdef = spdef
 	self.speed = speed
 	self.level = level
 	self.moves = 0
