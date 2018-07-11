@@ -2,7 +2,9 @@ Object = require "classic"
 require('objects/pokemon')
 require('objects/moves')
 require('objects/modifiers')
+require('objects/types')
 require('objects/battle')
+
 
 _moves = {}
 movecount = 0
@@ -10,24 +12,28 @@ movecount = 0
 function love.load()
 	math.randomseed(os.time())
 	love.graphics.setNewFont(18)
-	--Move(name,power,nature,par1,par2,par3,pp,priority)
-	_moves[movecount] = Move("hit",40,0,0,0,0,25,0)
+	--Move(name,power,nature,special,pp,priority[,par1,par2,par3],type)
+	_moves[movecount] = Move("hit",40,0,0,25,0,nil,nil,nil,"normal")
 	movecount = movecount+1
-	_moves[movecount] = Move("hits",12,1,2,5,0,20,0)
+	_moves[movecount] = Move("hits",12,1,0,20,0,2,5,nil,"normal")
 	movecount = movecount+1
-	_moves[movecount] = Move("don't hit",40,2,0,0,0,10,2)
+	_moves[movecount] = Move("don't hit",0,2,0,10,2,nil,nil,nil,"normal")
 	movecount = movecount+1
-	_moves[movecount] = Move("fasten",0,3,0,1,"speed",20,0)
+	_moves[movecount] = Move("fasten",0,3,0,20,0,0,1,"speed","normal")
 	movecount = movecount+1
-	--Pokemon(name,hp,atk,def,speed,level)
-	pok1 = Pokemon("Batman",30,56,35,70,7)
+	_moves[movecount] = Move("throw chairs",14,1,1,15,0,1,4,nil,"normal")
+	movecount = movecount+1
+	--Pokemon(name,hp,atk,def,spatk,spdef,speed,level,type)
+	pok1 = Pokemon("Batman",30,56,35,12,18,70,5,"normal")
 	pok1:addmove(_moves[0])
 	pok1:addmove(_moves[1])
 	pok1:addmove(_moves[3])
-	pok2 = Pokemon("Buttman",20,56,35,72,4)
-	pok2:addmove(_moves[0])
+	pok1:addmove(_moves[4])
+	pok2 = Pokemon("Buttman",20,30,20,40,35,72,4,"normal")
 	pok2:addmove(_moves[2])
+	pok2:addmove(_moves[4])
 	--Battle(pok1,pok2)
+	types = Types()
 	battle = Battle(pok1,pok2)
 end
 
