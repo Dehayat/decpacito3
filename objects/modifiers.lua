@@ -13,6 +13,11 @@ modifiers_multiplier[3] = 200
 modifiers_multiplier[4] = 233
 modifiers_multiplier[5] = 266
 modifiers_multiplier[6] = 300
+--added atk,def,spatk,spdef
 function modifiers:new()
   self.speed = 0
+  self.atk = 0
+  self.def = 0
+  self.spatk = 0
+  self.spdef = 0
 end

@@ -1,6 +1,7 @@
 Move = Object:extend()
 
-function Move:new(name,power,nature,par1,par2,par3,pp,priority)
+--put optional parameters at the end
+function Move:new(name,power,nature,special,pp,priority,type,par1,par2,par3)
 	self.name = name -- name
 	self.power = power -- power
 	self.nature = nature
@@ -10,6 +11,16 @@ function Move:new(name,power,nature,par1,par2,par3,pp,priority)
 	type2: protect
 	type3: stats modifiers
 	]]
+	--added is speical
+	self.special = special
+	--[[
+	0:physicial
+	1:special
+	2:status
+	]]
+	self.pp=pp -- pp
+	--added priorities
+	self.priority = priority -- priority (-oo,oo) ignores speed
 	self.par1 = par1
 	--[[
 	type1: min number of hits
@@ -27,7 +38,6 @@ function Move:new(name,power,nature,par1,par2,par3,pp,priority)
 	type3: affacted stat
 		speed
 	]]
-	self.pp=pp -- pp
-	--added priorities
-	self.priority = priority -- priority (-oo,oo) ignores speed
+
+	self.type=type
 end
