@@ -12,15 +12,15 @@ function love.load()
 	math.randomseed(os.time())
 	love.graphics.setNewFont(18)
 	--Move(name,power,nature,special,pp,type,priority[,par1,par2,par3])
-	_moves[movecount] = Move("hit",40,0,0,25,0,"normal")
+	_moves[movecount] = Move("hit",40,0,0,25,0,"normal",100)
 	movecount = movecount+1
-	_moves[movecount] = Move("hits",12,1,0,20,0,"normal",2,5)
+	_moves[movecount] = Move("hits",12,1,0,20,0,"normal",50,2,5)
 	movecount = movecount+1
-	_moves[movecount] = Move("don't hit",0,2,0,10,2,"normal")
+	_moves[movecount] = Move("don't hit",0,2,0,10,2,"normal",80)
 	movecount = movecount+1
-	_moves[movecount] = Move("fasten",0,3,0,20,0,"normal")
+	_moves[movecount] = Move("fasten",0,3,0,20,0,"normal",90,0,2,"speed")
 	movecount = movecount+1
-	_moves[movecount] = Move("throw chairs",14,1,1,15,0,"normal",1,4)
+	_moves[movecount] = Move("throw chairs",14,1,1,15,0,"normal",60,1,4)
 	movecount = movecount+1
 	--Pokemon(name,hp,atk,def,spatk,spdef,speed,level,type)
 	pok1 = Pokemon("Batman",30,56,35,12,18,70,5,"normal")

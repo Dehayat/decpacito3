@@ -1,7 +1,8 @@
 Move = Object:extend()
 
 --put optional parameters at the end
-function Move:new(name,power,nature,special,pp,priority,type,par1,par2,par3)
+--added accuracy
+function Move:new(name,power,nature,special,pp,priority,type,acc,par1,par2,par3)
 	self.name = name -- name
 	self.power = power -- power
 	self.nature = nature
@@ -21,6 +22,7 @@ function Move:new(name,power,nature,special,pp,priority,type,par1,par2,par3)
 	self.pp=pp -- pp
 	--added priorities
 	self.priority = priority -- priority (-oo,oo) ignores speed
+	self.acc = acc
 	self.par1 = par1
 	--[[
 	type1: min number of hits

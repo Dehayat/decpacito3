@@ -38,21 +38,32 @@ function Battle:update(dt)
 	end
 end
 
+function Battle:hit(m,from)
+	--for both accuracy and evasivness
+	stat = self:getstat("acc",from)
+	stat = stat * m.acc
+	if(math.random(0,100)<stat) then
+		return true
+	end
+	return false
+end
+
 --added from
 --[[
 	1: from pok1
 	2: from pok1
 ]]
+--added check if miss
 function Battle:attack(p1,p2,m,from)
-	if(m.nature==0 and not p2.protected) then
-		self:type0(p1,p2,m,from)
+	if(m.nature==0 and not p2.protected and self:hit(m,from)) then
+			self:type0(p1,p2,m,from)
 	--added protect nature move
-	elseif(m.nature==1 and not p2.protected) then
+	elseif(m.nature==1 and not p2.protected and self:hit(m,from)) then
 		self:type1(p1,p2,m,from)
 	elseif(m.nature==2) then
 		self:type2(p1,m,from)
 	elseif(m.nature==3) then
-		if(m.par1==1 and not p2.protected) then
+		if(m.par1==1 and not p2.protected and self:hit(m,from)) then
 			self:type3(self.mods2,m,from)
 		end
 		if(m.par1==0) then
@@ -135,6 +146,14 @@ end
 	2: from pok1
 ]]
 function Battle:getstat(statname,from)
+	--added stat calculation of accuracy and evasivnesss
+	--min of their sum must be -6 and max must be 6
+	if(statname=="acc") then
+		mod1 = self["mods"..from]
+		mod2 = self["mods"..(3-from)]
+		stat = math.max(-6,math.min(6,mod1.acc - mod2.evas))
+		return modifiers_multiplier[stat]
+	end
 	pok = self["pok"..from]
 	mod = self["mods"..from]
 	stat = pok[statname]
