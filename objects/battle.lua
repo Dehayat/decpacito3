@@ -9,6 +9,8 @@ function Battle:new(pok1,pok2)
 	self.move2 = nil
 	self.mods1 = modifiers()
 	self.mods2 = modifiers()
+	self.stat1 = Status()
+	self.stat2 = Status()
 end
 
 function Battle:update(dt)
@@ -27,6 +29,7 @@ function Battle:update(dt)
 				self.move2 = pok2.moveset[self:choose(self.pok2.moves)]
 				self.state = 1
 				self:calc()
+				self:endturn()
 			end
 		else
 			self.state=3
@@ -183,6 +186,21 @@ end
 
 function Battle:choose(m)
 	return math.floor(math.random(0,m-1))
+end
+
+function Battle:pokend(p,from)
+	s = self["stat"..from]
+	if(s.stat=="burn")then
+		p:damage(math.floor(p.maxhp/16))
+
+	end
+
+end
+
+function Battle:endturn()
+	self:pokend(self.pok1,1)
+	self:pokend(self.pok2,2)
+
 end
 
 function Battle:drawbase()

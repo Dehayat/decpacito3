@@ -3,6 +3,7 @@ require('objects/pokemon')
 require('objects/moves')
 require('objects/modifiers')
 require('objects/types')
+require('objects/status')
 require('objects/battle')
 
 _moves = {}
@@ -33,6 +34,7 @@ function love.load()
 	pok2:addmove(_moves[4])
 	--Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)
+	battle.stat1.stat="burn"
 end
 
 function love.update(dt)
