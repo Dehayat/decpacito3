@@ -34,7 +34,8 @@ function love.load()
 	pok2:addmove(_moves[4])
 	--Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)
-	battle.stat1.stat="burn"
+	battle.stat1.stat="BRN"
+	battle.stat2.stat="PSN"
 end
 
 function love.update(dt)

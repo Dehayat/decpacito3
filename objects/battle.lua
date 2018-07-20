@@ -190,9 +190,10 @@ end
 
 function Battle:pokend(p,from)
 	s = self["stat"..from]
-	if(s.stat=="burn")then
+	if(s.stat=="BRN")then
 		p:damage(math.floor(p.maxhp/16))
-
+	elseif(s.stat=="PSN")then
+		p:damage(math.floor(p.maxhp/16))
 	end
 
 end
@@ -207,6 +208,7 @@ function Battle:drawbase()
 	love.graphics.print(pok2.name,50,50)
 	love.graphics.print("Lv" .. pok2.level,130,50)
 	love.graphics.print("HP: " .. pok2.curhp .. "/" .. pok2.maxhp,80,70)
+	love.graphics.print(self.stat2.stat,150,100)
 	hpbar = "["
 	for i = 1,5 do
 		if(math.ceil(pok2.curhp/pok2.maxhp*5)>=i)then
@@ -220,7 +222,8 @@ function Battle:drawbase()
 
 	love.graphics.print(pok1.name,love.graphics.getWidth()-150,love.graphics.getHeight()-200)
 	love.graphics.print("Lv" .. pok1.level,love.graphics.getWidth()-150+80,love.graphics.getHeight()-200)
-	love.graphics.print("HP: " .. pok1.curhp .. "/" .. pok1.maxhp,love.graphics.getWidth()-150+30,love.graphics.getHeight()-200+20)
+	love.graphics.print("HP: " .. pok1.curhp .. "/" .. pok1.maxhp,love.graphics.getWidth()-150+40,love.graphics.getHeight()-200+20)
+	love.graphics.print(self.stat1.stat,love.graphics.getWidth()-50,love.graphics.getHeight()-200+50)
 
 	hpbar = "["
 	for i = 1,5 do

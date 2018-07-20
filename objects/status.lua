@@ -1,6 +1,6 @@
 Status = Object:extend()
 
 function Status:new()
-	self.stat=nil
+	self.stat=""
 	self.confuse=false
 end
