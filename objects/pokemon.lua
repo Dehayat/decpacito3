@@ -32,7 +32,7 @@ function Pokemon:addmove(p)
 end
 
 function Pokemon:damage(dmg)
-	take = min(dmg,self.curhp)
+	take = math.min(dmg,self.curhp)
 	self.curhp= self.curhp - take
 	if(self.curhp==0) then
 		return false

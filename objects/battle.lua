@@ -9,6 +9,8 @@ function Battle:new(pok1,pok2)
 	self.move2 = nil
 	self.mods1 = modifiers()
 	self.mods2 = modifiers()
+	self.stat1 = Status()
+	self.stat2 = Status()
 end
 
 function Battle:update(dt)
@@ -27,6 +29,7 @@ function Battle:update(dt)
 				self.move2 = pok2.moveset[self:choose(self.pok2.moves)]
 				self.state = 1
 				self:calc()
+				self:endturn()
 			end
 		else
 			self.state=3
@@ -204,10 +207,27 @@ function Battle:choose(m)
 	return math.floor(math.random(0,m-1))
 end
 
+function Battle:pokend(p,from)
+	s = self["stat"..from]
+	if(s.stat=="BRN")then
+		p:damage(math.floor(p.maxhp/16))
+	elseif(s.stat=="PSN")then
+		p:damage(math.floor(p.maxhp/16))
+	end
+
+end
+
+function Battle:endturn()
+	self:pokend(self.pok1,1)
+	self:pokend(self.pok2,2)
+
+end
+
 function Battle:drawbase()
 	love.graphics.print(pok2.name,50,50)
 	love.graphics.print("Lv" .. pok2.level,130,50)
 	love.graphics.print("HP: " .. pok2.curhp .. "/" .. pok2.maxhp,80,70)
+	love.graphics.print(self.stat2.stat,150,100)
 	hpbar = "["
 	for i = 1,5 do
 		if(math.ceil(pok2.curhp/pok2.maxhp*5)>=i)then
@@ -221,7 +241,8 @@ function Battle:drawbase()
 
 	love.graphics.print(pok1.name,love.graphics.getWidth()-150,love.graphics.getHeight()-200)
 	love.graphics.print("Lv" .. pok1.level,love.graphics.getWidth()-150+80,love.graphics.getHeight()-200)
-	love.graphics.print("HP: " .. pok1.curhp .. "/" .. pok1.maxhp,love.graphics.getWidth()-150+30,love.graphics.getHeight()-200+20)
+	love.graphics.print("HP: " .. pok1.curhp .. "/" .. pok1.maxhp,love.graphics.getWidth()-150+40,love.graphics.getHeight()-200+20)
+	love.graphics.print(self.stat1.stat,love.graphics.getWidth()-50,love.graphics.getHeight()-200+50)
 
 	hpbar = "["
 	for i = 1,5 do
