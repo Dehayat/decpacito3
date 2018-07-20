@@ -58,6 +58,18 @@ end
 ]]
 --added check if miss
 function Battle:attack(p1,p2,m,from)
+	--added sleep stuff before attacks
+	s = self["stat"..from]
+	if(s.stat=="SLP") then
+		s.par1 = s.par1-1
+		if(s.par1==0)then
+			s.stat = ""
+			s.par1 = nil
+		else
+			return
+		end
+	end
+
 	if(m.nature==0 and not p2.protected and self:hit(m,from)) then
 			self:type0(p1,p2,m,from)
 	--added protect nature move
@@ -67,11 +79,13 @@ function Battle:attack(p1,p2,m,from)
 		self:type2(p1,m,from)
 	elseif(m.nature==3) then
 		if(m.par1==1 and not p2.protected and self:hit(m,from)) then
-			self:type3(self.mods2,m,from)
+			self:type3(m,from)
 		end
 		if(m.par1==0) then
-			self:type3(self.mods1,m,from)
+			self:type3(m,from)
 		end
+	elseif(m.nature==4 and not p2.protected and self:hit(m,from)) then
+		self:type4(m,from)
 	end
 	--added reset protected
 	p2.protected = false
@@ -139,8 +153,20 @@ function Battle:type2(p1,m)
 	end
 end
 --added type3 attack
-function Battle:type3(mods,m)
+function Battle:type3(m,from)
+	mods = self["mod"..from]
 	mods[m.par3] = math.max(-6,math.min(6,mods[m.par3]+m.par2))
+end
+
+--added typ4 attack status conditions
+function Battle:type4(m,from)
+	stat = self["stat"..(3-from)]
+	if(m.par1=="SLP")then
+		if(math.random(0,100)<=m.par2) then
+			stat.stat = "SLP"
+			stat.par1 = math.random(2,6)
+		end
+	end
 end
 
 --getstat now take statname and from
@@ -210,9 +236,9 @@ end
 function Battle:pokend(p,from)
 	s = self["stat"..from]
 	if(s.stat=="BRN")then
-		p:damage(math.floor(p.maxhp/16))
+		p:damage(math.ceil(p.maxhp/16))
 	elseif(s.stat=="PSN")then
-		p:damage(math.floor(p.maxhp/16))
+		p:damage(math.ceil(p.maxhp/16))
 	end
 
 end
@@ -260,11 +286,11 @@ function Battle:drawcalc()
 end
 
 function Battle:drawend()
-	love.graphics.print(self.loser .. " is a me mario",50,love.graphics.getHeight()-150+25);
+	love.graphics.print(self.loser .. " Fainted...",50,love.graphics.getHeight()-150+25);
 end
 
 function Battle:drawpp()
-	love.graphics.print("pp is no more",50,love.graphics.getHeight()-150+25);
+	love.graphics.print("not enough pp",50,love.graphics.getHeight()-150+25);
 end
 
 function Battle:drawwait()

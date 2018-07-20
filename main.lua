@@ -12,7 +12,7 @@ movecount = 0
 function love.load()
 	math.randomseed(os.time())
 	love.graphics.setNewFont(18)
-	--Move(name,power,nature,special,pp,type,priority[,par1,par2,par3])
+	--Move(name,power,nature,special,pp,priority,type,acc,par1,par2,par3)
 	_moves[movecount] = Move("hit",40,0,0,25,0,"normal",100)
 	movecount = movecount+1
 	_moves[movecount] = Move("hits",12,1,0,20,0,"normal",50,2,5)
@@ -23,6 +23,8 @@ function love.load()
 	movecount = movecount+1
 	_moves[movecount] = Move("throw chairs",14,1,1,15,0,"normal",60,1,4)
 	movecount = movecount+1
+	_moves[movecount] = Move("snooze",0,4,2,10,0,"normal",80,"SLP",60)
+	movecount = movecount+1
 	--Pokemon(name,hp,atk,def,spatk,spdef,speed,level,type)
 	pok1 = Pokemon("Batman",30,56,35,12,18,70,5,"normal")
 	pok1:addmove(_moves[0])
@@ -30,12 +32,10 @@ function love.load()
 	pok1:addmove(_moves[3])
 	pok1:addmove(_moves[4])
 	pok2 = Pokemon("Buttman",20,30,20,40,35,72,4,"normal")
-	pok2:addmove(_moves[2])
+	pok2:addmove(_moves[5])
 	pok2:addmove(_moves[4])
 	--Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)
-	battle.stat1.stat="BRN"
-	battle.stat2.stat="PSN"
 end
 
 function love.update(dt)
