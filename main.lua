@@ -25,14 +25,15 @@ function love.load()
 	movecount = movecount+1
 	_moves[movecount] = Move("snooze",0,4,2,10,0,"normal",80,"SLP",60)
 	movecount = movecount+1
+	_moves[movecount] = Move("be still",0,4,2,10,0,"normal",80,"PAR",60)
+	movecount = movecount+1
 	--Pokemon(name,hp,atk,def,spatk,spdef,speed,level,type)
 	pok1 = Pokemon("Batman",30,56,35,12,18,70,5,"normal")
 	pok1:addmove(_moves[0])
 	pok1:addmove(_moves[1])
 	pok1:addmove(_moves[3])
-	pok1:addmove(_moves[4])
+	pok1:addmove(_moves[6])
 	pok2 = Pokemon("Buttman",20,30,20,40,35,72,4,"normal")
-	pok2:addmove(_moves[5])
 	pok2:addmove(_moves[4])
 	--Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)

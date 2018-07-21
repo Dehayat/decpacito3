@@ -69,6 +69,12 @@ function Battle:attack(p1,p2,m,from)
 			return
 		end
 	end
+	--added paralyze stuff before attacks
+	if(s.stat=="PAR") then
+		if(math.random(0,100)<=25)then
+			return
+		end
+	end
 
 	if(m.nature==0 and not p2.protected and self:hit(m,from)) then
 			self:type0(p1,p2,m,from)
@@ -161,9 +167,12 @@ end
 --added typ4 attack status conditions
 function Battle:type4(m,from)
 	stat = self["stat"..(3-from)]
-	if(m.par1=="SLP")then
+	if(stat.stat~="")then
+		return
+	end
+	if(m.par1=="SLP" or m.par1=="PAR")then
 		if(math.random(0,100)<=m.par2) then
-			stat.stat = "SLP"
+			stat.stat = m.par1
 			stat.par1 = math.random(2,6)
 		end
 	end
@@ -185,7 +194,11 @@ function Battle:getstat(statname,from)
 	end
 	pok = self["pok"..from]
 	mod = self["mods"..from]
+	status = self["stat"..from]
 	stat = pok[statname]
+	if(statname=="speed" and status.stat=="PAR")then
+		stat = math.floor(stat*0.25)
+	end
 	statmod = mod[statname]
 	return math.floor(stat*modifiers_multiplier[statmod]/100)
 end
