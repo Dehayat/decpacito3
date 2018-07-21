@@ -127,7 +127,11 @@ function Battle:getdmg(p1,p2,m,from)
 	else
 		base = math.floor((2*p1.level/5+2)*m.power*(self:getstat("spatk",from)/self:getstat("spdef",from))/50+2)
 	end
+	stat = self["stat"..(from)]
 	base = math.floor(base*self:modify(p1,p2,m))
+	if(m.special==0 and stat.stat=="BRN")then
+		base = math.ciel(base*0.5);
+	end
 	return base
 end
 
