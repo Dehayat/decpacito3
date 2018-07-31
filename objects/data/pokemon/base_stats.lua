@@ -1,0 +1,13 @@
+mon_base = {}
+mon_base[MON_FIREMELON] = pokstats()
+mon_base[MON_FIREMELON].name = "firemelon"
+mon_base[MON_FIREMELON].baseHp = 44
+mon_base[MON_FIREMELON].baseAttack = 58
+mon_base[MON_FIREMELON].baseDefense = 44
+mon_base[MON_FIREMELON].baseSpeed = 61
+mon_base[MON_FIREMELON].baseSpAttack = 58
+mon_base[MON_FIREMELON].baseSpDefense = 44
+mon_base[MON_FIREMELON].type1 = TYPE_FIRE
+mon_base[MON_FIREMELON].gender = 50
+mon_base[MON_FIREMELON].frontpic = "img/pokemon/FireMelon_front.png"
+mon_base[MON_FIREMELON].backpic = "img/pokemon/FireMelon_back.png"

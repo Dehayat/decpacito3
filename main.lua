@@ -1,54 +1,56 @@
 Object = require "classic"
-require('objects/pokemon')
-require('objects/moves')
-require('objects/modifiers')
-require('objects/types')
-require('objects/status')
-require('objects/battle')
+Timer = require "timer"
 
-_moves = {}
-movecount = 0
+require('objects/data/states')
+require('objects/data/types')
+require('objects/data/modifiers')
+
+require('objects/pokemon/pokstats')
+require('objects/pokemon/pokdata')
+require('objects/pokemon/pokemon')
+require('objects/data/pokemon/base_stats')
+
+
+require('objects/move')
+require('objects/data/moves')
+
+require('objects/battle/pokbattle')
+require('objects/battle/battle')
+require('objects/battle/battle2')
 
 function love.load()
+	timer = Timer()
 	math.randomseed(os.time())
-	love.graphics.setNewFont(18)
-	--Move(name,power,nature,special,pp,priority,type,acc,par1,par2,par3)
-	_moves[movecount] = Move("hit",40,0,0,25,0,"normal",100)
-	movecount = movecount+1
-	_moves[movecount] = Move("hits",12,1,0,20,0,"normal",50,2,5)
-	movecount = movecount+1
-	_moves[movecount] = Move("don't hit",0,2,0,10,2,"normal",80)
-	movecount = movecount+1
-	_moves[movecount] = Move("fasten",0,3,0,20,0,"normal",90,0,2,"speed")
-	movecount = movecount+1
-	_moves[movecount] = Move("throw chairs",14,1,1,15,0,"normal",60,1,4)
-	movecount = movecount+1
-	_moves[movecount] = Move("snooze",0,4,2,10,0,"normal",80,"SLP",60)
-	movecount = movecount+1
-	_moves[movecount] = Move("be still",0,4,2,10,0,"normal",80,"PAR",60)
-	movecount = movecount+1
+	smallfont= love.graphics.newFont(18)
+	medfont= love.graphics.newFont(24)
+	bigfont= love.graphics.newFont(30)
+	love.graphics.setFont(smallfont)
 	--Pokemon(name,hp,atk,def,spatk,spdef,speed,level,type)
-	pok1 = Pokemon("Batman",30,56,35,12,18,70,5,"normal")
+	pok1 = Pokemon(MON_FIREMELON,5,7)
 	pok1:addmove(_moves[0])
 	pok1:addmove(_moves[1])
-	pok1:addmove(_moves[3])
-	pok1:addmove(_moves[6])
-	pok2 = Pokemon("Buttman",20,30,20,40,35,72,4,"normal")
-	pok2:addmove(_moves[5])
-	pok2:addmove(_moves[4])
-	--Battle(pok1,pok2)
+	pok1:addmove(_moves[MOVE_SNOOZE])
+	pok1:addmove(_moves[MOVE_DONT_HIT])
+	--pok1:addmove(_moves[6])
+	pok2 = Pokemon(MON_FIREMELON,3,6)
+	pok2:addmove(_moves[0])
+	Battle(pok1,pok2)
 	battle = Battle(pok1,pok2)
+	love.graphics.setBackgroundColor(0.8,0.8,0.8)
 end
 
 function love.update(dt)
+	timer:update(dt)
 	battle:update(dt)
 end
 
 function love.draw()
+	love.graphics.setColor(0.7,0.1,0.7)
 	love.graphics.print("LOVE",love.graphics.getWidth()-60,10)
+	love.graphics.setColor(0.1,0.1,0.1)
 	battle:draw()
 end
 
-function love.keyreleased(key)
+function love.keypressed(key)
 	battle.key=key
 end
