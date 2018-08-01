@@ -5,6 +5,7 @@ function Battle:attack_hit(pok1,pok2,f2)
     crit = DIALOGUE_CLEAR_TIME
     base = base*1.5
   end
+  base = math.max(base,1)
 	local take = math.min(base,pok2:getcurhp())
   timer:tween(DIALOGUE_CLEAR_TIME, pok2.pok, {curhp = math.max(0,math.floor(pok2:getcurhp()-take))}, 'out-quad',
     function ()
@@ -23,9 +24,6 @@ function Battle:attack_hit(pok1,pok2,f2)
           effective = DIALOGUE_CLEAR_TIME
         elseif(eff<0.9)then
           self.dialogue = "it's not very effective..."
-          effective = DIALOGUE_CLEAR_TIME
-        elseif(eff==0)then
-          self.dialogue = "it's doesn't affect " .. pok2.getname()
           effective = DIALOGUE_CLEAR_TIME
         end
         timer:after(effective,function ()
@@ -83,6 +81,7 @@ function Battle:attack_hits(pok1,pok2,f2,t,t2)
         crit = DIALOGUE_CLEAR_TIME/2
         base = base*1.5
       end
+      base = math.max(base,1)
     	local take = math.floor(math.min(base,pok2:getcurhp()))
       timer:tween(HITS_LENGTH, pok2.pok, {curhp = pok2:getcurhp()-take}, 'out-quad', function()
         if(crit ~=0)then
@@ -139,19 +138,24 @@ function Battle:attack_stats(pok1,pok2,f2)
   if(ch==true)then
     if(pok1.move.stage>0)then
       timer:after(DIALOGUE_CLEAR_TIME,function()
-        self.dialogue = name .. "'s {stat} rose"
+        self.dialogue = name .. "'s " .. stat_name[pok1.move.stat] .. " rose"
           timer:after(DIALOGUE_CLEAR_TIME,f2)
       end)
     else
       timer:after(DIALOGUE_CLEAR_TIME,function()
-        self.dialogue = name .. "'s {stat} fell"
+        self.dialogue = name .. "'s " .. stat_name[pok1.move.stat] .. " fell"
           timer:after(DIALOGUE_CLEAR_TIME,f2)
       end)
     end
   else
     timer:after(DIALOGUE_CLEAR_TIME,function ()
-      self.dialogue = "But it failed"
-      timer:after(DIALOGUE_CLEAR_TIME,f2)
+
+      if(pok1.move.secondaryEffect==nil)then
+        self.dialogue = "But it failed"
+        timer:after(DIALOGUE_CLEAR_TIME,f2)
+      else
+        f2()
+      end
     end)
   end
 end
@@ -162,8 +166,12 @@ function Battle:attack_status(pok1,pok2,f2)
   end
   if(pok2:getstatus()==pok1.move.status or math.random(1,100)>pok1.move.probability)then
     timer:after(DIALOGUE_CLEAR_TIME,function ()
-      self.dialogue = "But it failed"
-      timer:after(DIALOGUE_CLEAR_TIME,f2)
+      if(pok1.move.secondaryEffect==nil)then
+        self.dialogue = "But it failed"
+        timer:after(DIALOGUE_CLEAR_TIME,f2)
+      else
+        f2()
+      end
     end)
     return
   end
@@ -183,4 +191,48 @@ function Battle:attack_status(pok1,pok2,f2)
     end
     timer:after(DIALOGUE_CLEAR_TIME,f2)
   end)
+end
+
+function Battle:attack_vol_status(pok1,pok2,f2)
+  if(f2==nil)then
+    f2 = function () self.state = STATE_END_TURN end
+  end
+  if(pok2.vol[pok1.move.status] or math.random(1,100)>pok1.move.probability)then
+    timer:after(DIALOGUE_CLEAR_TIME,function ()
+      if(pok1.move.secondaryEffect==nil)then
+        self.dialogue = "But it failed"
+        timer:after(DIALOGUE_CLEAR_TIME,f2)
+      else
+        f2()
+      end
+    end)
+    return
+  end
+  timer:after(DIALOGUE_CLEAR_TIME,function ()
+    pok2.vol[pok1.move.status] = true
+    if(pok1.move.status==VOL_STATUS_CONFUSE)then
+      pok2.confturns = math.random(2,5)
+      self.dialogue = pok2:getname() .. " is confused"
+    end
+    timer:after(DIALOGUE_CLEAR_TIME,f2)
+  end)
+end
+
+function Battle:attack_conf(pok1,f2)
+  local base = self:getdmg_notype(pok1,pok1,40)
+	local take = math.min(base,pok1:getcurhp())
+  timer:tween(DIALOGUE_CLEAR_TIME, pok1.pok, {curhp = math.max(0,math.floor(pok1:getcurhp()-take))}, 'out-quad',
+    function ()
+      pok1.pok.curhp = pok1.pok.curhp + 0.1
+      pok1.pok.curhp = math.max(pok1.pok.curhp,0)
+      pok1.pok.curhp = math.floor(pok1.pok.curhp)
+      if(self:checkfaint(pok1))then
+        return
+      end
+      if(f2)then
+        f2()
+      else
+        self.state = STATE_END_TURN
+      end
+    end)
 end

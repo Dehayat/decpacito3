@@ -34,6 +34,16 @@ mods_name[STAT_SPDEFENSE] = "spdef"
 mods_name[STAT_ACCURACY] = "acc"
 mods_name[STAT_EVASE] = "evas"
 
+
+stat_name = {}
+stat_name[STAT_SPEED] = "speed"
+stat_name[STAT_ATTACK] = "attack"
+stat_name[STAT_DEFENSE] = "defense"
+stat_name[STAT_SPATTACK] = "special attack"
+stat_name[STAT_SPDEFENSE] = "special defense"
+stat_name[STAT_ACCURACY] = "accuracy"
+stat_name[STAT_EVASE] = "evasiveness"
+
 status_name = {}
 status_name[STATUS_SLP] = "SLP"
 status_name[STATUS_PAR] = "PAR"

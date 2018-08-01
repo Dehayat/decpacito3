@@ -11,6 +11,11 @@ function pokbattle:new(pok,front)
   self.pic = love.graphics.newImage(self.pok:getpic(front))
   self.x = nil
   self.y = nil
+
+  --volatile status
+  self.vol = {}
+  self.confturns = nil
+
 end
 
 function pokbattle:getname()

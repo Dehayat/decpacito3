@@ -78,3 +78,15 @@ _moves[MOVE_BE_STILL].type = TYPE_NORMAL
 _moves[MOVE_BE_STILL].accuracy = 80
 _moves[MOVE_BE_STILL].status = STATUS_PAR
 _moves[MOVE_BE_STILL].probability = 60
+
+_moves[MOVE_OBFUSCATE] = Move("obfuscate")
+_moves[MOVE_OBFUSCATE].power = 50
+_moves[MOVE_OBFUSCATE].nature = MOVE_TYPE_HIT
+_moves[MOVE_OBFUSCATE].special = 1
+_moves[MOVE_OBFUSCATE].pp = 20
+_moves[MOVE_OBFUSCATE].priority = 0
+_moves[MOVE_OBFUSCATE].type = TYPE_PSYCHIC
+_moves[MOVE_OBFUSCATE].accuracy = 100
+_moves[MOVE_OBFUSCATE].secondaryEffect = MOVE_TYPE_VOL_STATUS
+_moves[MOVE_OBFUSCATE].status = VOL_STATUS_CONFUSE
+_moves[MOVE_OBFUSCATE].probability = 40
