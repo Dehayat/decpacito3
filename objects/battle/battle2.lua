@@ -16,14 +16,15 @@ function Battle:attack_hit(pok1,pok2,f2)
       end
       timer:after(crit,function ()
         local effective = 0
-        print(types_effect[pok1.move.type][pok2:gettype()])
-        if(types_effect[pok1.move.type][pok2:gettype()]>1.1)then
+        local eff = get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2())
+        print(eff)
+        if(eff>1.1)then
           self.dialogue = "it's super effective..."
           effective = DIALOGUE_CLEAR_TIME
-        elseif(types_effect[pok1.move.type][pok2:gettype()]<0.9)then
+        elseif(eff<0.9)then
           self.dialogue = "it's not very effective..."
           effective = DIALOGUE_CLEAR_TIME
-        elseif(types_effect[pok1.move.type][pok2:gettype()]==0)then
+        elseif(eff==0)then
           self.dialogue = "it's doesn't affect " .. pok2.getname()
           effective = DIALOGUE_CLEAR_TIME
         end
@@ -57,14 +58,14 @@ function Battle:attack_hits(pok1,pok2,f2,t,t2)
         self.dialogue = "hit " .. (t2-t) .. " time(s)."
         timer:after(DIALOGUE_CLEAR_TIME,function()
           local effective = 0
-          print(types_effect[pok1.move.type][pok2:gettype()])
-          if(types_effect[pok1.move.type][pok2:gettype()]>1.1)then
+          local eff = get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2())
+          if(eff>1.1)then
             self.dialogue = "it's super effective..."
             effective = DIALOGUE_CLEAR_TIME
-          elseif(types_effect[pok1.move.type][pok2:gettype()]<0.9)then
+          elseif(eff<0.9)then
             self.dialogue = "it's not very effective..."
             effective = DIALOGUE_CLEAR_TIME
-          elseif(types_effect[pok1.move.type][pok2:gettype()]==0)then
+          elseif(eff==0)then
             self.dialogue = "it's doesn't affect " .. pok2.getname()
             effective = DIALOGUE_CLEAR_TIME
           end

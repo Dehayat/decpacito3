@@ -47,3 +47,7 @@ end
 function pokdata:gettype()
 	return self.base.type1
 end
+
+function pokdata:gettype2()
+	return self.base.type2
+end

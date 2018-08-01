@@ -8,6 +8,7 @@ mon_base[MON_FIREMELON].baseSpeed = 61
 mon_base[MON_FIREMELON].baseSpAttack = 58
 mon_base[MON_FIREMELON].baseSpDefense = 44
 mon_base[MON_FIREMELON].type1 = TYPE_FIRE
+mon_base[MON_FIREMELON].type2 = TYPE_GRASS
 mon_base[MON_FIREMELON].gender = 50
 mon_base[MON_FIREMELON].frontpic = "img/pokemon/FireMelon_front.png"
 mon_base[MON_FIREMELON].backpic = "img/pokemon/FireMelon_back.png"

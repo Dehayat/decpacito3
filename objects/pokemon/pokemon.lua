@@ -69,6 +69,10 @@ function Pokemon:gettype()
 	return self.data:gettype()
 end
 
+function Pokemon:gettype2()
+	return self.data:gettype2()
+end
+
 function Pokemon:updatestats()
 	local _hp,_atk,_def,_spatk,_spdef,_speed = self.data:getstats()
 	self.maxhp = math.floor((_hp+math.floor(self.EVHp/4))/100)+self.level+10

@@ -7,11 +7,11 @@ Battle = Object:extend()
 
 function Battle:new(pok1,pok2)
   self.mon1 = pokbattle(pok1,0)
-  self.mon1.x = 50
-  self.mon1.y = 160
+  self.mon1.x = 20
+  self.mon1.y = 120
   self.mon2 = pokbattle(pok2,1)
-  self.mon2.x = 350
-  self.mon2.y = 50
+  self.mon2.x = 380
+  self.mon2.y = 30
   self.state = STATE_WAIT
   --arrow and chosen moves
   self.movearrow = 0
@@ -66,7 +66,7 @@ function Battle:drawbase()
 	love.graphics.setColor(0.1,0.1,0.1)
 
 	love.graphics.setColor(1,1,1)
-  love.graphics.draw(self.mon2.pic,self.mon2.x,self.mon2.y,0,0.4,0.4)
+  love.graphics.draw(self.mon2.pic,self.mon2.x,self.mon2.y,0,0.45,0.45)
 	love.graphics.setColor(0.1,0.1,0.1)
 
   --mon1
@@ -108,7 +108,7 @@ function Battle:drawbase()
 	love.graphics.print(math.floor(self.mon1:getcurhp()) .. "/" .. self.mon1:getmaxhp(),500,300)
 
 	love.graphics.setColor(1,1,1)
-  love.graphics.draw(self.mon1.pic,self.mon1.x,self.mon1.y,0,0.5,0.5)
+  love.graphics.draw(self.mon1.pic,self.mon1.x,self.mon1.y,0,0.6,0.6)
 	love.graphics.setColor(0.1,0.1,0.1)
 
   --dialogue box
@@ -413,7 +413,7 @@ function Battle:getdmg(p1,p2)
   if(p1:gettype()==p1.move.type)then
     base = math.floor(base*1.5)
   end
-  base = base * types_effect[p1.move.type][p2:gettype()]
+  base = math.floor(base * get_type_effect(p1.move.type,p2:gettype(),p2:gettype2())/2)
 	return math.max(1,base)
 end
 

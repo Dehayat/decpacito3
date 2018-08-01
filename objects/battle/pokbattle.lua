@@ -87,6 +87,11 @@ end
 function pokbattle:gettype()
   return self.pok:gettype()
 end
+
+function pokbattle:gettype2()
+  return self.pok:gettype2()
+end
+
 function pokbattle:endturn()
   self.protected = nil
   self.lastmove =self.move.name

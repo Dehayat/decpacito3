@@ -29,3 +29,11 @@ _types[TYPE_NORMAL] = "Normal"
 _types[TYPE_FIRE] = "Fire"
 _types[TYPE_WATER] = "Water"
 _types[TYPE_GRASS] = "Grass"
+
+function get_type_effect(t1,t2,t3)
+  local ans = types_effect[t1][t2]/2
+  if(t3)then
+    ans = ans * types_effect[t1][t3]/2
+  end
+  return ans
+end
