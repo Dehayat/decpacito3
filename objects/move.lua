@@ -1,7 +1,5 @@
 Move = Object:extend()
 
---put optional parameters at the end
---added accuracy
 function Move:new(name)
 
 	self.name = name

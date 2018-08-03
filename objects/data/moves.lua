@@ -7,6 +7,7 @@ _moves[MOVE_HIT].pp = 10
 _moves[MOVE_HIT].priority = 0
 _moves[MOVE_HIT].type = TYPE_NORMAL
 _moves[MOVE_HIT].accuracy = 100
+_moves[MOVE_HIT].anim = MOVE_ANIM_HIT
 
 
 _moves[MOVE_HITS] = Move("hits")
@@ -19,6 +20,7 @@ _moves[MOVE_HITS].type = TYPE_NORMAL
 _moves[MOVE_HITS].accuracy = 100
 _moves[MOVE_HITS].minhits = 2
 _moves[MOVE_HITS].maxhits = 5
+_moves[MOVE_HITS].anim = MOVE_ANIM_HITS
 
 
 _moves[MOVE_DONT_HIT] = Move("don't hit")
@@ -29,6 +31,7 @@ _moves[MOVE_DONT_HIT].pp = 15
 _moves[MOVE_DONT_HIT].priority = 2
 _moves[MOVE_DONT_HIT].type = TYPE_NORMAL
 _moves[MOVE_DONT_HIT].accuracy = 90
+_moves[MOVE_DONT_HIT].anim = MOVE_ANIM_PROTECT
 
 
 _moves[MOVE_FASTEN] = Move("fasten")
@@ -42,6 +45,7 @@ _moves[MOVE_FASTEN].accuracy = 90
 _moves[MOVE_FASTEN].stat = STAT_SPEED
 _moves[MOVE_FASTEN].who = 1
 _moves[MOVE_FASTEN].stage = 2
+_moves[MOVE_FASTEN].anim = MOVE_ANIM_STAT
 
 
 _moves[MOVE_THROW_CHAIRS] = Move("throw chairs")
@@ -54,6 +58,7 @@ _moves[MOVE_THROW_CHAIRS].type = TYPE_NORMAL
 _moves[MOVE_THROW_CHAIRS].accuracy = 100
 _moves[MOVE_THROW_CHAIRS].minhits = 1
 _moves[MOVE_THROW_CHAIRS].maxhits = 4
+_moves[MOVE_HITS].anim = MOVE_ANIM_HITS
 
 
 _moves[MOVE_SNOOZE] = Move("snooze")
@@ -66,6 +71,7 @@ _moves[MOVE_SNOOZE].type = TYPE_NORMAL
 _moves[MOVE_SNOOZE].accuracy = 90
 _moves[MOVE_SNOOZE].status = STATUS_SLP
 _moves[MOVE_SNOOZE].probability = 80
+_moves[MOVE_SNOOZE].anim = MOVE_ANIM_STATUS
 
 
 _moves[MOVE_BE_STILL] = Move("be still")
@@ -78,6 +84,7 @@ _moves[MOVE_BE_STILL].type = TYPE_NORMAL
 _moves[MOVE_BE_STILL].accuracy = 80
 _moves[MOVE_BE_STILL].status = STATUS_PAR
 _moves[MOVE_BE_STILL].probability = 60
+_moves[MOVE_BE_STILL].anim = MOVE_ANIM_STATUS
 
 _moves[MOVE_OBFUSCATE] = Move("obfuscate")
 _moves[MOVE_OBFUSCATE].power = 50
@@ -90,3 +97,4 @@ _moves[MOVE_OBFUSCATE].accuracy = 100
 _moves[MOVE_OBFUSCATE].secondaryEffect = MOVE_TYPE_VOL_STATUS
 _moves[MOVE_OBFUSCATE].status = VOL_STATUS_CONFUSE
 _moves[MOVE_OBFUSCATE].probability = 40
+_moves[MOVE_HIT].anim = MOVE_ANIM_HIT

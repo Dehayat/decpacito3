@@ -23,6 +23,8 @@ function Battle:new(pok1,pok2)
   self.fill = 'fill'
   self.dialogue = "."
 
+  self.anim = nil
+
   self.arrow_press_y = 440
 end
 
@@ -110,6 +112,12 @@ function Battle:drawbase()
 	love.graphics.setColor(1,1,1)
   love.graphics.draw(self.mon1.pic,self.mon1.x,self.mon1.y,0,0.6,0.6)
 	love.graphics.setColor(0.1,0.1,0.1)
+
+  if(self.anim)then
+    self.anim()
+  end
+
+
 
   --dialogue box
 
@@ -306,11 +314,14 @@ function Battle:attack(pok1,pok2,f)
     if(math.random(1,100)<=25)then
       self.state = STATE_DIALOGUE
       self.dialogue = pok1:getname() .. " is paralyzed and can't move."
-      if(f)then
-        timer:after(DIALOGUE_CLEAR_TIME,function() self:attack(pok2,pok1) end)
-      else
-        timer:after(DIALOGUE_CLEAR_TIME,function() self.state = STATE_END_TURN end)
-      end
+      battle_anims[MOVE_ANIM_STATUS].fun(pok1,self,STATUS_PAR)
+      timer:after(battle_anims[MOVE_ANIM_PROTECT].duration ,function()
+        if(f)then
+          timer:after(DIALOGUE_CLEAR_TIME,function() self:attack(pok2,pok1) end)
+        else
+          timer:after(DIALOGUE_CLEAR_TIME,function() self.state = STATE_END_TURN end)
+        end
+      end)
       return
     end
   end
@@ -344,11 +355,15 @@ function Battle:attack(pok1,pok2,f)
   if(pok1:getstatus()==STATUS_SLP)then
     self.state = STATE_DIALOGUE
     self.dialogue = pok1:getname() .. " is fast asleep."
-    if(f)then
-      timer:after(DIALOGUE_CLEAR_TIME,function() self:attack(pok2,pok1) end)
-    else
-      timer:after(DIALOGUE_CLEAR_TIME,function() self.state = STATE_END_TURN end)
-    end
+
+    battle_anims[MOVE_ANIM_STATUS].fun(pok1,self,STATUS_SLP)
+    timer:after(battle_anims[MOVE_ANIM_PROTECT].duration ,function()
+      if(f)then
+        timer:after(DIALOGUE_CLEAR_TIME,function() self:attack(pok2,pok1) end)
+      else
+        timer:after(DIALOGUE_CLEAR_TIME,function() self.state = STATE_END_TURN end)
+      end
+    end)
     return
   end
   if(pok1.lastmove==pok1.move.name)then
@@ -392,58 +407,61 @@ function Battle:attack(pok1,pok2,f)
   if(pok1:getstatus() == STATUS_PAR)then
     miss = math.floor(miss*0.5)
   end
-  if(math.random(1,100)>miss or  get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2()) == 0)then
-    timer:after(DIALOGUE_CLEAR_TIME,function()
-      self.dialogue = "But it missed."
-      if(get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2())==0)then self.dialogue = "it doesn't affect " .. pok2:getname() .. "." end
+  timer:after(0.8, function ()
+    if(math.random(1,100)>miss or  get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2()) == 0)then
       timer:after(DIALOGUE_CLEAR_TIME,function()
-         if(f) then
-           self:attack(pok2,pok1)
-         else
-           self.state = STATE_END_TURN
-         end
+        self.dialogue = "But it missed."
+        if(get_type_effect(pok1.move.type,pok2:gettype(),pok2:gettype2())==0)then self.dialogue = "it doesn't affect " .. pok2:getname() .. "." end
+        timer:after(DIALOGUE_CLEAR_TIME,function()
+           if(f) then
+             self:attack(pok2,pok1)
+           else
+             self.state = STATE_END_TURN
+           end
+         end)
        end)
-     end)
-     return
-  end
-  local f2 = nil
-  if(f)then
-    local next = f2
-    if(pok1.move.secondaryEffect==nil)then
-      f2 = function() self:attack(pok2,pok1) end
-    else
-      if(pok1.move.secondaryEffect==MOVE_TYPE_STATS)then
-        f2 = function() self:attack_stats(pok1,pok2,function() self:attack(pok2,pok1) end) end
-      elseif(pok1.move.secondaryEffect==MOVE_TYPE_STATUS)then
-        f2 = function() self:attack_status(pok1,pok2,function() self:attack(pok2,pok1) end) end
-      elseif(pok1.move.secondaryEffect==MOVE_TYPE_VOL_STATUS)then
-        f2 = function() self:attack_vol_status(pok1,pok2,function() self:attack(pok2,pok1) end) end
+       return
+    end
+    local f2 = nil
+    if(f)then
+      local next = f2
+      if(pok1.move.secondaryEffect==nil)then
+        f2 = function() self:attack(pok2,pok1) end
+      else
+        if(pok1.move.secondaryEffect==MOVE_TYPE_STATS)then
+          f2 = function() self:attack_stats(pok1,pok2,function() self:attack(pok2,pok1) end) end
+        elseif(pok1.move.secondaryEffect==MOVE_TYPE_STATUS)then
+          f2 = function() self:attack_status(pok1,pok2,function() self:attack(pok2,pok1) end) end
+        elseif(pok1.move.secondaryEffect==MOVE_TYPE_VOL_STATUS)then
+          f2 = function() self:attack_vol_status(pok1,pok2,function() self:attack(pok2,pok1) end) end
+        end
       end
     end
-  end
-  if(pok2.protected==true)then
-    if(pok1.move.nature == MOVE_TYPE_HIT or pok1.move.nature == MOVE_TYPE_HITS or (pok1.move.nature == MOVE_TYPE_STATS and pok1.move.who==2)
-    or pok1.move.nature == MOVE_TYPE_STATUS) then
-      timer:after(STATE_DIALOGUE,function()
-         self.dialogue = pok2:getname() .. " protected itself"
-         timer:after(STATE_DIALOGUE,function() self.state = STATE_END_TURN end)
-       end)
-      return
+    if(pok2.protected==true)then
+      if(pok1.move.nature == MOVE_TYPE_HIT or pok1.move.nature == MOVE_TYPE_HITS or (pok1.move.nature == MOVE_TYPE_STATS and pok1.move.who==2)
+      or pok1.move.nature == MOVE_TYPE_STATUS) then
+        timer:after(STATE_DIALOGUE,function()
+           self.dialogue = pok2:getname() .. " protected itself"
+           battle_anims[MOVE_ANIM_PROTECT].fun(pok2,self)
+           timer:after(battle_anims[MOVE_ANIM_PROTECT].duration ,function() self.state = STATE_END_TURN end)
+          end)
+        return
+      end
     end
-  end
-  if(pok1.move.nature==MOVE_TYPE_HIT)then
-    self:attack_hit(pok1,pok2,f2)
-  elseif(pok1.move.nature==MOVE_TYPE_HITS)then
-    self:attack_hits(pok1,pok2,f2)
-  elseif(pok1.move.nature==MOVE_TYPE_PROTECT)then
-    self:attack_protect(pok1,pok2,f2)
-  elseif(pok1.move.nature==MOVE_TYPE_STATS)then
-    self:attack_stats(pok1,pok2,f2)
-  elseif(pok1.move.nature==MOVE_TYPE_STATUS)then
-    self:attack_status(pok1,pok2,f2)
-  elseif(pok1.move.nature==MOVE_TYPE_VOL_STATUS)then
-    self:attack_vol_status(pok1,pok2,f2)
-  end
+    if(pok1.move.nature==MOVE_TYPE_HIT)then
+      self:attack_hit(pok1,pok2,f2)
+    elseif(pok1.move.nature==MOVE_TYPE_HITS)then
+      self:attack_hits(pok1,pok2,f2)
+    elseif(pok1.move.nature==MOVE_TYPE_PROTECT)then
+      self:attack_protect(pok1,pok2,f2)
+    elseif(pok1.move.nature==MOVE_TYPE_STATS)then
+      self:attack_stats(pok1,pok2,f2)
+    elseif(pok1.move.nature==MOVE_TYPE_STATUS)then
+      self:attack_status(pok1,pok2,f2)
+    elseif(pok1.move.nature==MOVE_TYPE_VOL_STATUS)then
+      self:attack_vol_status(pok1,pok2,f2)
+    end
+  end)
 end
 
 function Battle:getdmg(p1,p2)

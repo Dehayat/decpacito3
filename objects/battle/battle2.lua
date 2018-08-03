@@ -7,8 +7,11 @@ function Battle:attack_hit(pok1,pok2,f2)
   end
   base = math.max(base,1)
 	local take = math.min(base,pok2:getcurhp())
-  timer:tween(DIALOGUE_CLEAR_TIME, pok2.pok, {curhp = math.max(0,math.floor(pok2:getcurhp()-take))}, 'out-quad',
-    function ()
+  local mirror = 1
+  if(pok1.x>200)then  mirror = -1 end
+  battle_anims[pok1.move.anim].fun(pok2,mirror)
+  timer:after(battle_anims[pok1.move.anim].duration,function()
+    timer:tween(DIALOGUE_CLEAR_TIME, pok2.pok, {curhp = math.max(0,math.floor(pok2:getcurhp()-take))}, 'out-quad',function ()
       pok2.pok.curhp = pok2.pok.curhp + 0.1
       pok2.pok.curhp = math.max(pok2.pok.curhp,0)
       pok2.pok.curhp = math.floor(pok2.pok.curhp)
@@ -38,6 +41,7 @@ function Battle:attack_hit(pok1,pok2,f2)
         end)
       end)
     end)
+  end)
 end
 
 function Battle:attack_hits(pok1,pok2,f2,t,t2)
@@ -76,19 +80,24 @@ function Battle:attack_hits(pok1,pok2,f2,t,t2)
       end)
     else
       local base = self:getdmg(pok1,pok2)
-      local crit = 0
-      if(math.random(1,100)/100<=1/16)then
-        crit = DIALOGUE_CLEAR_TIME/2
-        base = base*1.5
-      end
-      base = math.max(base,1)
-    	local take = math.floor(math.min(base,pok2:getcurhp()))
-      timer:tween(HITS_LENGTH, pok2.pok, {curhp = pok2:getcurhp()-take}, 'out-quad', function()
-        if(crit ~=0)then
-          self.dialogue = "critical hit..."
+      local mirror = 1
+      if(pok1.x>200)then  mirror = -1 end
+      battle_anims[pok1.move.anim].fun(pok2,mirror)
+      timer:after(battle_anims[pok1.move.anim].duration,function()
+        local crit = 0
+        if(math.random(1,100)/100<=1/16)then
+          crit = DIALOGUE_CLEAR_TIME/2
+          base = base*1.5
         end
-        timer:after(crit,function ()
-          self:attack_hits(pok1,pok2,f2,t-1,t2)
+        base = math.max(base,1)
+      	local take = math.floor(math.min(base,pok2:getcurhp()))
+        timer:tween(HITS_LENGTH, pok2.pok, {curhp = pok2:getcurhp()-take}, 'out-quad', function()
+          if(crit ~=0)then
+            self.dialogue = "critical hit..."
+          end
+          timer:after(crit,function ()
+            self:attack_hits(pok1,pok2,f2,t-1,t2)
+          end)
         end)
       end)
     end
@@ -116,8 +125,12 @@ function Battle:attack_protect(pok1,pok2,f2)
         timer:after(DIALOGUE_CLEAR_TIME,f2)
       end)
     else
-      pok1.protected = true
-      timer:after(DIALOGUE_CLEAR_TIME,f2)
+
+      battle_anims[pok1.move.anim].fun(pok1,self)
+      timer:after(battle_anims[pok1.move.anim].duration,function()
+        pok1.protected = true
+        timer:after(DIALOGUE_CLEAR_TIME/2,f2)
+      end)
     end
   end
 end
@@ -125,12 +138,15 @@ end
 function Battle:attack_stats(pok1,pok2,f2)
   local ch = nil
   local name = nil
+  local send = nil
   if(pok1.move.who==1)then
     ch = pok1:modstats(pok1.move)
     name = pok1:getname()
+    send = pok1
   else
     ch = pok2:modstats(pok1.move)
     name = pok1:getname()
+    send = pok2
   end
   if(f2==nil)then
     f2 = function () self.state = STATE_END_TURN end
@@ -139,12 +155,18 @@ function Battle:attack_stats(pok1,pok2,f2)
     if(pok1.move.stage>0)then
       timer:after(DIALOGUE_CLEAR_TIME,function()
         self.dialogue = name .. "'s " .. stat_name[pok1.move.stat] .. " rose"
-          timer:after(DIALOGUE_CLEAR_TIME,f2)
+          timer:after(DIALOGUE_CLEAR_TIME/4,function()
+            battle_anims[pok1.move.anim].fun(pok1,self)
+            timer:after(battle_anims[pok1.move.anim].duration,f2)
+          end)
       end)
     else
       timer:after(DIALOGUE_CLEAR_TIME,function()
         self.dialogue = name .. "'s " .. stat_name[pok1.move.stat] .. " fell"
-          timer:after(DIALOGUE_CLEAR_TIME,f2)
+          timer:after(DIALOGUE_CLEAR_TIME/4,function()
+            battle_anims[pok1.move.anim].fun(pok1,self)
+            timer:after(battle_anims[pok1.move.anim].duration,f2)
+          end)
       end)
     end
   else
@@ -189,7 +211,8 @@ function Battle:attack_status(pok1,pok2,f2)
     elseif(pok1.move.status==STATUS_FRZ)then
       self.dialogue = pok2:getname() .. " was frozen solid."
     end
-    timer:after(DIALOGUE_CLEAR_TIME,f2)
+    battle_anims[pok1.move.anim].fun(pok2,self,pok1.move.status)
+    timer:after(battle_anims[pok1.move.anim].duration,f2)
   end)
 end
 
