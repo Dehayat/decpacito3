@@ -12,7 +12,9 @@ function Battle:new(pok1,pok2)
   self.mon2 = pokbattle(pok2,1)
   self.mon2.x = 380
   self.mon2.y = 30
-  self.state = STATE_WAIT
+  self.state = STATE_MENU
+  --arrow menu
+  self.menuarrow = 0
   --arrow and chosen moves
   self.movearrow = 0
   self.enemymove = nil
@@ -214,9 +216,43 @@ function Battle:drawdialoguepress()
   end
 end
 
+function Battle:drawmenu()
+  if(self.arrow_time_left<=0)then
+    self.arrow_time_left = ARROW_INVERT_TIME
+    if(self.fill=='fill')then
+      self.fill = 'line'
+    else
+      self.fill = 'fill'
+    end
+  end
+  local w = love.graphics.getLineWidth()
+  love.graphics.setLineWidth(5)
+  love.graphics.rectangle( "line",310.5, 337.5, 400, 140)
+  love.graphics.setLineWidth(w)
+  love.graphics.setFont(bigfont)
+  love.graphics.print("Fight",350,365)
+  love.graphics.print("Pokémon",350,420)
+  love.graphics.print("Bag",525,365)
+  love.graphics.print("Run",525,420)
+  love.graphics.setFont(smallfont)
+
+  love.graphics.setLineWidth(3)
+  if(self.menuarrow==0)then
+    love.graphics.polygon(self.fill, 325,375,325,395,340,385)
+  elseif(self.menuarrow==1)then
+    love.graphics.polygon(self.fill, 500,375,500,395,515,385)
+  elseif(self.menuarrow==2)then
+    love.graphics.polygon(self.fill, 325,425,325,445,340,435)
+  else
+    love.graphics.polygon(self.fill, 500,425,500,445,515,435)
+  end
+  love.graphics.setLineWidth(w)
+
+end
+
 function Battle:draw()
 	self:drawbase()
-	if(self.state==STATE_WAIT) then
+	if(self.state==STATE_ATTACK) then
 		self:drawwait()
   elseif(self.state == STATE_CALC) then
     local a = 0
@@ -225,14 +261,17 @@ function Battle:draw()
   elseif(self.state == STATE_DIALOGUE_PRESS) then
     self:drawdialogue()
     self:drawdialoguepress()
-
+  elseif(self.state == STATE_MENU) then
+    self:drawmenu()
   end
 end
 
 function Battle:updatewait(dt)
   if(self.key)then
-    if(self.key=="space")then
+    if(self.key=="x")then
       self.state = STATE_CALC
+    elseif(self.key=="z")then
+      self.state = STATE_MENU
     end
     self.arrow_time_left = ARROW_INVERT_TIME
     self.fill = 'fill'
@@ -294,16 +333,59 @@ function Battle:updatecalc(dt)
   end
 end
 
+function Battle:updatemenu(dt)
+  if(self.key)then
+    if(self.key=="x")then
+      if(self.menuarrow==0)then
+        self.state = STATE_ATTACK
+      end
+    end
+    self.arrow_time_left = ARROW_INVERT_TIME
+    self.fill = 'fill'
+    if(self.key=="up")then
+      if(self.menuarrow==2)then
+        self.menuarrow = 0
+      elseif(self.menuarrow==3)then
+        self.menuarrow = 1
+      end
+    end
+    if(self.key=="left")then
+      if(self.menuarrow==1)then
+        self.menuarrow = 0
+      elseif(self.menuarrow==3)then
+        self.menuarrow = 2
+      end
+    end
+    if(self.key=="down")then
+      if(self.menuarrow==0)then
+        self.menuarrow = 2
+      elseif(self.menuarrow==1)then
+        self.menuarrow = 3
+      end
+    end
+
+    if(self.key=="right")then
+      if(self.menuarrow==0)then
+        self.menuarrow = 1
+      elseif(self.menuarrow==2)then
+        self.menuarrow = 3
+      end
+    end
+  end
+end
+
 function Battle:update(dt)
   self.arrow_time_left = self.arrow_time_left - dt
-  if(self.state == STATE_WAIT)then
+  if(self.state == STATE_ATTACK)then
     self:updatewait(dt)
   elseif(self.state == STATE_CALC) then
     self:updatecalc(dt)
   elseif(self.state == STATE_END_TURN) then
     self:updateendturn(dt)
   elseif(self.state == STATE_DIALOGUE_PRESS and self.key) then
-    self.state = STATE_WAIT
+    self.state = STATE_ATTACK
+  elseif(self.state == STATE_MENU) then
+    self:updatemenu(dt)
   end
   self.key = nil
 end
@@ -519,7 +601,7 @@ function Battle:endturn(mon,f)
         mon.pok.curhp = math.max(mon.pok.curhp,0)
         mon.pok.curhp = math.floor(mon.pok.curhp)
         if(f)then self:checkfaint(mon,f)
-        else self:checkfaint(mon,function () self.state = STATE_WAIT end) end
+        else self:checkfaint(mon,function () self.state = STATE_ATTACK end) end
       end)
   elseif(mon:getstatus()==STATUS_PSN)then
     self.state = STATE_DIALOGUE
@@ -530,10 +612,10 @@ function Battle:endturn(mon,f)
         mon.pok.curhp = math.max(mon.pok.curhp,0)
         mon.pok.curhp = math.floor(mon.pok.curhp)
         if(f)then self:checkfaint(mon,f)
-        else self:checkfaint(mon,function () self.state = STATE_WAIT end) end
+        else self:checkfaint(mon,function () self.state = STATE_ATTACK end) end
       end)
   else
     if(f)then f()
-    else self.state = STATE_WAIT end
+    else self.state = STATE_ATTACK end
   end
 end
