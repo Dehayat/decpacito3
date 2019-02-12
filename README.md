@@ -1,2 +1,3 @@
 # decpacito3
-pokemon clone
+
+Just a Pokemon clone made for fun by Dehayat and Samour
